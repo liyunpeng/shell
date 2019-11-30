@@ -1,0 +1,20 @@
+#! /bin/bash
+#功能说明： ~/bin/shell添加到path里
+#TODO: 添加到~/.bashrc的重复判断未完善
+
+#
+#s1='PATH=${PATH}:~/bin/shell'
+
+#s2='export PATH=$(echo $PATH | tr : "\n"| sort | uniq | tr "\n" :)'
+#echo $s1 >> ~/.bashrc
+
+#echo $s2 >> ~/.bashrc
+
+#awk '/"${s1}"/{getline var;print $1"\n" var}' ~/.bashrc > 2.txt
+
+#grep -i ${s1} -A 1  ~/.bashrc | grep -v  -e  "--" >2.txt
+
+#cat 2.txt
+
+PATH=${PATH}:~/bin/shell
+export PATH=$(echo $PATH | tr : "\n"| sort | uniq | tr "\n" :)
