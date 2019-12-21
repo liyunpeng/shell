@@ -4,7 +4,7 @@
 #用法 soure ~/bin/shell/gomodenvExport.sh
 
 export GO111MODULE="on"
-export GOPATH=/d/gomodpah/
+export GOPATH=/home/master/gomodpath
 
 export CGO_ENABLED="0"
 export GOOS="linux"
