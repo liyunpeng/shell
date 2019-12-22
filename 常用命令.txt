@@ -1,0 +1,5 @@
+批量改变当前目录下所有文件的所属用户和用户组
+sudo chown -R master.master ./ 
+如果samba没有设置force user
+那么windows访问的samba时，创建的文件的用户是nobody
+
