@@ -15,11 +15,12 @@ echo "          public = yes    " >> /etc/samba/smb.conf
 echo "          kernel oplocks = no " >> /etc/samba/smb.conf
 echo "          nt acl support = no " >> /etc/samba/smb.conf
 echo "          security = user " >> /etc/samba/smb.conf
-echo "          guest account = nobody  " >> /etc/samba/smb.conf
+echo "          guest account = master  " >> /etc/samba/smb.conf
 echo "  [upload]    " >> /etc/samba/smb.conf
 echo "          comment = upload    " >> /etc/samba/smb.conf
 echo "          path = /home/master/k8s " >> /etc/samba/smb.conf
 echo "          read only = no  " >> /etc/samba/smb.conf
+echo "          force userd = master  " >> /etc/samba/smb.conf
 echo "          browseable = yes    " >> /etc/samba/smb.conf
 echo "          public = yes    " >> /etc/samba/smb.conf
 echo "          printable = no  " >> /etc/samba/smb.conf
