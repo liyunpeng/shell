@@ -1,4 +1,8 @@
-#!/bin/bash
+#!/bin/bash 
+# 适合于ubuntu 18.04
+sudo apt-get install samba samba-common -y 
+USER=`ls /home`
+
 mv /etc/samba/smb.conf /etc/samba/smb.conf.backup
 
 echo "  [global]    " > /etc/samba/smb.conf
@@ -15,13 +19,12 @@ echo "          public = yes    " >> /etc/samba/smb.conf
 echo "          kernel oplocks = no " >> /etc/samba/smb.conf
 echo "          nt acl support = no " >> /etc/samba/smb.conf
 echo "          security = user " >> /etc/samba/smb.conf
-echo "          guest account = master  " >> /etc/samba/smb.conf
+echo "          guest account = ${USER} " >> /etc/samba/smb.conf
 echo "  [upload]    " >> /etc/samba/smb.conf
 echo "          comment = upload    " >> /etc/samba/smb.conf
-echo "          path = /home/master/k8s " >> /etc/samba/smb.conf
+echo "          path = /home/${USER}  " >> /etc/samba/smb.conf
 echo "          read only = no  " >> /etc/samba/smb.conf
-echo "          force userd = master  " >> /etc/samba/smb.conf
-echo "          browseable = yes    " >> /etc/samba/smb.conf
+echo "          force userd = ${USER}  " >> /etc/samba/smb.conf
 echo "          public = yes    " >> /etc/samba/smb.conf
 echo "          printable = no  " >> /etc/samba/smb.conf
 echo "          guest ok = yes  " >> /etc/samba/smb.conf
@@ -30,7 +33,7 @@ echo "          level2 oplocks = no " >> /etc/samba/smb.conf
 echo "          locking = no    " >> /etc/samba/smb.conf
 
 #mkdir -p /home/master/k8s
-chmod -R 0777 /home/master/k8s
+chmod -R 0777 /home/${USER}
 #chown -R nobody:nobody /home/master/k8s
 /etc/init.d/smbd restart
 /etc/init.d/smbd enable 
