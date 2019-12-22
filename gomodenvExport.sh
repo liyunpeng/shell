@@ -9,4 +9,4 @@ export GOPATH=/home/master/gomodpath
 export CGO_ENABLED="0"
 export GOOS="linux"
 export GOARCH=amd64
-export GOPROXY="https://goproxy.io"
+export GOPROXY="https://goproxy.cn"
