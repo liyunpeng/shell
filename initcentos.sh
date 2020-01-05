@@ -1,7 +1,9 @@
 #! /bin/bash
 
 # sudo yum intall git -y
+sudo yum install make gcc -y
 
+ sudo dnf install redhat-rpm-config -y
 cat <<EOF>> ~/.bashrc
 source <(kubectl completion bash)
 alias k=kubectl
