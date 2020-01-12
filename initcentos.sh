@@ -15,4 +15,7 @@ sudo sed -i '/swap/ s/^/#/' /etc/fstab
 
 sudo systemctl set-default multi-user.target
 
+git config --global user.email "you@example.com"
+git config --global user.name "ljc"
+
 source ~/.bashrc

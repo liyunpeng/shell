@@ -1,6 +1,16 @@
 #!/bin/bash 
-# 适合于centos
+# 适合于centos8
+# 如果安装的是cenos8服务器，需要关闭防火墙和selinux
+# sudo systemctl stop firewalld.service
+# getenforce
+# sudo setenforce 0
+
+
+set -v
+
 USER=`ls /home`
+
+echo $USER
 
 yum -y install samba samba-client
 

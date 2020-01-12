@@ -1,0 +1,10 @@
+只安装samba时物理内存：
+
+[user1@localhost ~]$ shell/catcpumem.sh
+物理总内存=MemTotal: 16216552 kB
+物理剩余内存=MemFree: 15390100 kB
+内核版本与操作系统=Linux version 4.18.0-80.el8.x86_64 (mockbuild@kbuilder.bsys.centos.org) (gcc version 8.2.1 20180905 (Red Hat 8.2.1-3) (C)) #1 SMP Tue Jun 4 09:19:46 UTC 2019
+cpu数目=1
+一个cpu上的核数=cpu cores : 2
+一个cpu上的核数和cpu型号和每个核的频率= 4 AMD Athlon(tm) X4 750 Quad Core Processor
+
