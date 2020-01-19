@@ -3,3 +3,17 @@ sudo chown -R master.master ./
 如果samba没有设置force user
 那么windows访问的samba时，创建的文件的用户是nobody
 
+将文件file排序
+sort -n file 
+sort -n file | uniq  -u （显示不重复的数字）
+sort -n file | uniq  -c （重复数字）
+sort -n file | uniq  -d  （显示重复数字）
+
+diff -u hehe xixi (对比两个文件的不同，要把hehe文件变为xixi文件需要改变什么)
+diff -u hehe xixi > hehe.path  （生成path补丁）
+
+
+uname -s linux系统输出为Linux
+Linux
+uname -m 显示硬件架构
+x86_64
