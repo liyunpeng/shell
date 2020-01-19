@@ -48,13 +48,21 @@ Environment=ETCD_DATA_DIR=/var/lib/etcd
 
 Environment=ETCD_NAME=%m
 
-ExecStart=/usr/local/bin/etcd
+ExecStart=/usr/local/bin/etcd --name etcd0 \
+--data-dir /data/etcd \
+--initial-advertise-peer-urls http://192.168.43.144:2380 \
+--listen-peer-urls http://192.168.43.144:2380 \
+--advertise-client-urls http://192.168.43.144:2379 \
+--listen-client-urls http://192.168.43.144:2379,http://127.0.0.1:2379 
+
 
 Restart=always
 
 RestartSec=10s
 
 LimitNOFILE=40000
+
+
 
 [Install]
 
