@@ -12,3 +12,5 @@ cp ../config/server.properties ../config/server.properties-backup
 cp ../config/zookeeper.properties ../config/zookeeper.properties-backup
 
 sudo yum install java -y
+
+echo ''

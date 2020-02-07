@@ -1,0 +1,65 @@
+git clone 的如果是http方式， 每次push时都要密码。 
+必须用 ssh方式，可以避免输入密码，如：
+git clone git@github.com:liyunpeng/jsstudy.git
+
+github网站的git地址复制按钮上方有个http方式和ssh方式选择按钮， 选中ssh方式， 赋值即可。
+
+使用ssh方式， 生成key时，必须—C指定一个邮箱名作为账号名，这样生成的key才能正常添加到github上
+$ git config --global --list
+gui.recentrepo=D:/phpStudy/PHPTutorial/WWW/lzlj
+gui.encoding=utf-8
+user.email=jinyang
+user.name=jinyang
+core.quotepath=false
+
+$ git config --global user.email kylin27@126.com
+
+
+生成key时，必须—C指定一个邮箱名作为账号名，这样生成的key才能正常添加到github上
+$ ssh-keygen -t rsa -b 4096 -C "kylin27@126.com"
+Generating public/private rsa key pair.
+
+Enter file in which to save the key (/c/Users/Administrator/.ssh/id_rsa): /c/Users/Administrator/.ssh/id_rsa already exists.
+Overwrite (y/n)? y
+Enter passphrase (empty for no passphrase):  
+Enter same passphrase again:
+Your identification has been saved in /c/Users/Administrator/.ssh/id_rsa.
+Your public key has been saved in /c/Users/Administrator/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:2EJa2FtnUlO69HfeYlLUqYbQnvbEyRa0DXHKdpGdLRE kylin27@126.com
+The key's randomart image is:
++---[RSA 4096]----+
+|          o..+E==|
+|     o   ..oo B+=|
+|    . + o.=. *.=.|
+|     + = =oo*.=  |
+|    . + S .=.Oo .|
+|       .  . =o o.|
+|            ..o o|
+|             o . |
+|                 |
++----[SHA256]-----+
+
+检查ssh是否正常运行
+$ eval $(ssh-agent -s)
+Agent pid 2584
+
+
+$  ssh-add ~/.ssh/id_rsa
+Identity added: /c/Users/Administrator/.ssh/id_rsa (/c/Users/Administrator/.ssh/id_rsa)
+
+拷贝到粘贴板
+$ clip < ~/.ssh/id_rsa.pub
+
+在github网站seting里的sshkey添加id_rsa.pub的内容
+
+$ git push
+Counting objects: 3, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 268 bytes | 0 bytes/s, done.
+Total 3 (delta 2), reused 0 (delta 0)
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To git@github.com:liyunpeng/jsstudy.git
+   eb13a67..542c6fd  master -> master
+

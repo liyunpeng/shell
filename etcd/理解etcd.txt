@@ -3,11 +3,8 @@ etcd v3 操作：
 通过写入etcd来测试CentOS/RHEL 8上的etcd安装：
 
 $ etcdctl set /message "Hello World"
-
 Hello World
-
 读取消息的值：
-
 $ etcdctl get /message
 
 Hello World
