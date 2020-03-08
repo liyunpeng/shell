@@ -1,0 +1,170 @@
+先说yum的前提：repo配置文件
+repo配置文件可以手动下载，也可以直接从远端下载，推荐从远端下载，wget -O 指定了下载文件的本地存放路径，所有的repo文件都要放在/etc/yum.repos.d/目录下，这样才能被rpm, yum识别。
+$ sudo wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-8.repo
+--2020-01-04 03:45:54--  http://mirrors.aliyun.com/repo/Centos-8.repo
+正在解析主机 mirrors.aliyun.com (mirrors.aliyun.com)... 27.221.92.112, 119.167.188.227, 27.221.92.125, ...
+正在连接 mirrors.aliyun.com (mirrors.aliyun.com)|27.221.92.112|:80... 已连接。
+已发出 HTTP 请求，正在等待回应... 200 OK
+长度：2595 (2.5K) [application/octet-stream]
+正在保存至: “/etc/yum.repos.d/CentOS-Base.repo”
+/etc/yum.repos.d/CentOS-Base.repo  100%[================================================================>]   2.53K  --.-KB/s  用时 0s
+2020-01-04 03:45:54 (157 MB/s) - 已保存 “/etc/yum.repos.d/CentOS-Base.repo” [2595/2595])
+
+好了，现在说yum安装. 
+centos软件包的安装文件都是rpm文件
+rpm命令和yum命令都是安装repo配置文件指定的的软件rpm文件
+不同在于：
+rpm命令只会安装指定的rpm文件，
+yum命令会从repo文件里找到软件的具体rpm名字， 并且找到所有这个rpm安装包，所依赖的其他安装包， 简单说就是找出所有依赖
+然后，依次按依赖顺序，依次安装这些rpm软件包。
+不建议用rpm命令，因为rpm不会去自动去下载依赖的包，自己去找，会麻烦，而且可能不稳定，因为依赖的包又可能依赖其他的包，
+这层层依赖，一个个去手动下载是不合理的。 比如：
+$ rpm -i glusterfs-resource-agents-6.6-1.el8.noarch.rpm
+警告：glusterfs-resource-agents-6.6-1.el8.noarch.rpm: 头V4 RSA/SHA256 Signature, 密钥 ID c2f8238c: NOKEY
+错误：依赖检测失败：
+        /usr/lib/ocf/resource.d 被 glusterfs-resource-agents-6.6-1.el8.noarch 需要
+        glusterfs-server = 6.6-1.el8 被 glusterfs-resource-agents-6.6-1.el8.noarch 需要
+
+所以实际中多是配置好repo文件，用一个yum命令，一键式安装好目标安装包和所有依赖安装包
+
+------------------------------------------------------------------------------------------------------------
+以glusterfs-server，记录一下centos8上yum方式安装的正确姿势：
+先配置好repo, 这是yum的依据，决定了软件包的具体详细完整的版本号，和下载地址。
+1. 复制glusterfs官网提供的repo到本地
+cat  << EOF > /etc/yum.repos.d/glusterfs.repo
+[glusterfs-rhel8]
+name=GlusterFS is a clustered file-system capable of scaling to several petabytes.
+baseurl=https://download.gluster.org/pub/gluster/glusterfs/6/LATEST/RHEL/el-$releasever/$basearch/
+enabled=1
+skip_if_unavailable=1
+gpgcheck=1
+gpgkey=https://download.gluster.org/pub/gluster/glusterfs/6/rsa.pub
+
+[glusterfs-noarch-rhel8]
+name=GlusterFS is a clustered file-system capable of scaling to several petabytes.
+baseurl=https://download.gluster.org/pub/gluster/glusterfs/6/LATEST/RHEL/el-$releasever/noarch
+enabled=1
+skip_if_unavailable=1
+gpgcheck=1
+gpgkey=https://download.gluster.org/pub/gluster/glusterfs/6/rsa.pub
+EOF
+这里之所以没选最新版本glusterfs/7，是因为python3-pyxattr这个rpm，没有找到包含这个rpm的repo.
+$ sudo yum install -y glusterfs-server-7.1-1.el8.x86_64
+上次元数据过期检查：0:01:52 前，执行于 2020年01月04日 星期六 12时47分53秒。
+错误：
+ 问题: conflicting requests
+  - nothing provides python3-pyxattr needed by glusterfs-server-7.1-1.el8.x86_64
+(try to add '--skip-broken' to skip uninstallable packages or '--nobest' to use not only best candidate packages)
+
+2. 下载基础repo到本地，这个repo提供了依赖包的明细，包括版本号，下载地址等
+sudo wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
+到此repo就准备好了， 可以一键yum安装了
+
+3. 一键yum安装，借此观察一下yum命令包含的所有动作：
+$ sudo yum install glusterfs-server
+GlusterFS is a clustered file-system capable of scaling to several petabytes.                    3.5 kB/s |  23 kB     00:06
+依赖关系解决。
+=================================================================================================================================
+ 软件包                                  架构                  版本                         仓库                            大小
+=================================================================================================================================
+Installing:
+ glusterfs-server                        x86_64                6.6-1.el8                    glusterfs-rhel8                1.4 M
+Upgrading:
+ glusterfs                               x86_64                6.6-1.el8                    glusterfs-rhel8                682 k
+ glusterfs-api                           x86_64                6.6-1.el8                    glusterfs-rhel8                122 k
+ glusterfs-cli                           x86_64                6.6-1.el8                    glusterfs-rhel8                221 k
+ glusterfs-client-xlators                x86_64                6.6-1.el8                    glusterfs-rhel8                895 k
+ glusterfs-fuse                          x86_64                6.6-1.el8                    glusterfs-rhel8                167 k
+ glusterfs-libs                          x86_64                6.6-1.el8                    glusterfs-rhel8                441 k
+安装依赖关系:
+ python36-pyxattr                        x86_64                0.6.1-1.el7                  epel                            27 k
+
+事务概要
+=================================================================================================================================
+安装  2 软件包
+升级  6 软件包
+
+总下载：3.9 M
+确定吗？[y/N]： y
+下载软件包：
+(1/8): python36-pyxattr-0.6.1-1.el7.x86_64.rpm                                                    23 kB/s |  27 kB     00:01
+(2/8): glusterfs-api-6.6-1.el8.x86_64.rpm                                                         14 kB/s | 122 kB     00:08
+(3/8): glusterfs-6.6-1.el8.x86_64.rpm                                                             54 kB/s | 682 kB     00:12
+(4/8): glusterfs-cli-6.6-1.el8.x86_64.rpm                                                         43 kB/s | 221 kB     00:05
+(5/8): glusterfs-client-xlators-6.6-1.el8.x86_64.rpm                                             260 kB/s | 895 kB     00:03
+(6/8): glusterfs-fuse-6.6-1.el8.x86_64.rpm                                                        49 kB/s | 167 kB     00:03
+(7/8): glusterfs-libs-6.6-1.el8.x86_64.rpm                                                       110 kB/s | 441 kB     00:03
+(8/8): glusterfs-server-6.6-1.el8.x86_64.rpm                                                      50 kB/s | 1.4 MB     00:28
+---------------------------------------------------------------------------------------------------------------------------------
+总计                                                                                             139 kB/s | 3.9 MB     00:28
+警告：/var/cache/dnf/glusterfs-rhel8-1e0066f11f4db4d9/packages/glusterfs-server-6.6-1.el8.x86_64.rpm: 头V4 RSA/SHA256 Signature, 密钥 ID c2f8238c: NOKEY
+GlusterFS is a clustered file-system capable of scaling to several petabytes.                    686  B/s | 1.7 kB     00:02
+导入 GPG 公钥 0xC2F8238C:
+ Userid: "Gluster Packager <glusterpackager@download.gluster.org>"
+ 指纹: F9C9 58A3 AEE0 D218 4FAD 1CBD 4360 7F0D C2F8 238C
+ 来自: https://download.gluster.org/pub/gluster/glusterfs/6/rsa.pub
+确定吗？[y/N]： y
+导入公钥成功
+运行事务检查
+事务检查成功。
+运行事务测试
+事务测试成功。
+运行事务
+  准备中      :                                                                                                              1/1
+  Upgrading   : glusterfs-libs-6.6-1.el8.x86_64                                                                             1/14
+  运行脚本    : glusterfs-6.6-1.el8.x86_64                                                                                  2/14
+  Upgrading   : glusterfs-6.6-1.el8.x86_64                                                                                  2/14
+  运行脚本    : glusterfs-6.6-1.el8.x86_64                                                                                  2/14
+  Upgrading   : glusterfs-client-xlators-6.6-1.el8.x86_64                                                                   3/14
+  Upgrading   : glusterfs-api-6.6-1.el8.x86_64                                                                              4/14
+  Upgrading   : glusterfs-fuse-6.6-1.el8.x86_64                                                                             5/14
+  Upgrading   : glusterfs-cli-6.6-1.el8.x86_64                                                                              6/14
+  Installing  : python36-pyxattr-0.6.1-1.el7.x86_64                                                                         7/14
+  Installing  : glusterfs-server-6.6-1.el8.x86_64                                                                           8/14
+  运行脚本    : glusterfs-server-6.6-1.el8.x86_64                                                                           8/14
+  清理        : glusterfs-fuse-3.12.2-40.2.el8.x86_64                                                                       9/14
+  清理        : glusterfs-api-3.12.2-40.2.el8.x86_64                                                                       10/14
+  运行脚本    : glusterfs-api-3.12.2-40.2.el8.x86_64                                                                       10/14
+  清理        : glusterfs-3.12.2-40.2.el8.x86_64                                                                           11/14
+  运行脚本    : glusterfs-3.12.2-40.2.el8.x86_64                                                                           11/14
+  清理        : glusterfs-client-xlators-3.12.2-40.2.el8.x86_64                                                            12/14
+  清理        : glusterfs-cli-3.12.2-40.2.el8.x86_64                                                                       13/14
+  清理        : glusterfs-libs-3.12.2-40.2.el8.x86_64                                                                      14/14
+  运行脚本    : glusterfs-libs-3.12.2-40.2.el8.x86_64                                                                      14/14
+  验证        : python36-pyxattr-0.6.1-1.el7.x86_64                                                                         1/14
+  验证        : glusterfs-server-6.6-1.el8.x86_64                                                                           2/14
+  验证        : glusterfs-6.6-1.el8.x86_64                                                                                  3/14
+  验证        : glusterfs-3.12.2-40.2.el8.x86_64                                                                            4/14
+  验证        : glusterfs-api-6.6-1.el8.x86_64                                                                              5/14
+  验证        : glusterfs-api-3.12.2-40.2.el8.x86_64                                                                        6/14
+  验证        : glusterfs-cli-6.6-1.el8.x86_64                                                                              7/14
+  验证        : glusterfs-cli-3.12.2-40.2.el8.x86_64                                                                        8/14
+  验证        : glusterfs-client-xlators-6.6-1.el8.x86_64                                                                   9/14
+  验证        : glusterfs-client-xlators-3.12.2-40.2.el8.x86_64                                                            10/14
+  验证        : glusterfs-fuse-6.6-1.el8.x86_64                                                                            11/14
+  验证        : glusterfs-fuse-3.12.2-40.2.el8.x86_64                                                                      12/14
+  验证        : glusterfs-libs-6.6-1.el8.x86_64                                                                            13/14
+  验证        : glusterfs-libs-3.12.2-40.2.el8.x86_64                                                                      14/14
+
+已升级:
+  glusterfs-6.6-1.el8.x86_64                       glusterfs-api-6.6-1.el8.x86_64         glusterfs-cli-6.6-1.el8.x86_64
+  glusterfs-client-xlators-6.6-1.el8.x86_64        glusterfs-fuse-6.6-1.el8.x86_64        glusterfs-libs-6.6-1.el8.x86_64
+
+已安装:
+  glusterfs-server-6.6-1.el8.x86_64                              python36-pyxattr-0.6.1-1.el7.x86_64
+
+完毕！
+-------------------------------------------------------------------------------------------------
+以上是yum安装glusterfs-server软件的安装过程，中文的输出，意思非常明了，以后安装操作系统，一定要选择中文， 对于快速理解非常重要。
+总结一下，
+1. 列出了任务的明细：
+    包括需要安装的软件包需要升级的软件包，和依赖的软件包， 以字段的方式列出这些软件包名字，架构，版本，所属仓库，大小。
+以此总结出事务概要：安装两个软件包，升级6个软件包。 然后开始事务。
+
+2. 用事务运行这些任务
+    运行事务之前需要的准备包括导入公钥，检查事务，测试事务。
+    以上都成功后，就运行事务，名之为事务，就具有事务的ACID四大特性， 隔离性，原子性，一致性，持久性。
+    事务中包含的动作, 对每个rpm包有三个动作， 运行脚本， upgrding , installing , 验证。
+    所有动作完成后， 会给出一个总结： 已升级了什么， 已安装了什么，都有明细。
+    
+
