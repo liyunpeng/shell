@@ -1,0 +1,15 @@
+#!/bin/bash
+datestr=$(date +%Y%m%d%H%M)
+mkdir $datestr
+
+scp -rpP 62534 "10.10.11.31:/home/fil/poster.log" ./${datestr}/poster.log
+scp -rpP 62534 "10.10.11.31:/home/fil/lotus.log" ./${datestr}/lotus.log
+scp -rpP 62534 "10.10.11.32:/home/fil/sealer.log" ./${datestr}/sealer.log
+
+scp -rpP 62534 "10.10.11.33:/home/fil/force-remote-worker.log" ./${datestr}/p23-11.13.force-remote-worker.log
+
+scp -rpP 62534 "10.10.11.37:/home/fil/force-remote-worker.log" ./${datestr}/p4-11.13.force-remote-worker.log
+scp -rpP 62534 "10.10.10.21:/home/fil/force-remote-worker.log" ./${datestr}/p1pc-10.21.force-remote-worker.log
+
+
+

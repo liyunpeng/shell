@@ -1,0 +1,6 @@
+#! /bin/zsh
+
+scp -rpP 54073 -i ~/.ssh/id_rsa root@103.78.229.68:/home/cmd/  ./
+
+
+

@@ -1,0 +1,16 @@
+#! /bin/bash
+
+ipfs:Ipfs@123@tcp(10.10.12.40:3306)/lotus31?loc=Local&parseTime=true
+
+MYSQLHOST="10.10.12.40"
+MYSQLUSER="ipfs"
+MYSQLPWD="Ipfs@123"
+MYSQLPORT="3306"
+MYSQLDB="lotus31"
+
+
+echo "health tables total:" > mysqlCount.txt;
+# mysql  -h$MYSQLHOST  -u$MYSQLUSER  -p$MYSQLPWD  -P$MYSQLPORT  -D$MYSQLDB  -Bse  "select count(*) from information_schema.tables where  table_schema =\"$MYSQLDB\";">>mysqlCountLocal.txt;
+
+mysql  -h$MYSQLHOST  -u$MYSQLUSER  -p$MYSQLPWD  -P$MYSQLPORT  -D$MYSQLDB  -Bse  "SELECT state, count(*) from sectors GROUP BY state">>mysqlCountLocal.txt;
+
