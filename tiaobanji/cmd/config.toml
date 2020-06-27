@@ -1,0 +1,12 @@
+scheduler_url = "http://10.10.11.31:3456"
+local_dir = "/sealer"
+seal_commit_phase1_output = "/sealer/p3cache"
+copy_limit_mb_per_sec = 500
+group_id= [1]
+sector_size = 536870912
+ip = "10.10.11.33"
+
+[[worker]]
+num = 1
+supported_phase = ["PreCommitPhase2","CommitPhase1"]
+wait_sec = 60

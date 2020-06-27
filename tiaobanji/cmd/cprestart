@@ -1,0 +1,31 @@
+#!/bin/bash
+function GetRemotePs() {
+  path=$1
+  ret=""
+  scp -rpP 62534 restartprocess  $path:/home/fil/tempres
+ssh -p 62534 $path > /dev/null 2>&1 << eeooff
+  rm /home/fil/restartprocess
+  mv /home/fil/tempres /home/fil/restartprocess
+  chown -R fil:fil /home/fil/restartprocess
+  exit
+eeooff
+}
+
+ips=(
+"10.10.11.33" 
+"10.10.11.34"
+"10.10.11.35"
+"10.10.11.36"
+"10.10.11.37"
+"10.10.11.38"
+"10.10.11.39"
+"10.10.11.40"
+"10.10.10.21" 
+)
+
+
+for ip in ${ips[@]}; do
+  echo -e $ip
+  ret=$(GetRemotePs $ip)
+  # echo $ret
+done

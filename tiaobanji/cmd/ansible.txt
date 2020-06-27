@@ -1,0 +1,20 @@
+ansible-playbook -i hosts-storage-6-22 test.yml -f 30
+
+ansible-playbook -i hosts-storage-6-22 03storage_node_init.yml --step
+
+ansible ligang -m shell -a "ps aux |grep force |grep -v grep "
+
+ansible 10.10.11.31 -m shell -a "ps aux |grep lotus  |grep -v grep "
+ 
+ansible ligang -m copy -a "src=/home/cmd/config.toml dest=/home/fil/ owner=fil group=fil"
+ 
+ansible ligang -m shell -a "mount -t nfs -o hard,nolock,rw,user,rsize=1048576,wsize=1048576,vers=3 10.10.7.31:/sealer   /sealer"
+
+------------
+
+ansible ligang -m copy -a "src=/home/cmd/restartprocess  dest=/home/fil/ owner=fil group=fil"
+ansible ligang -m shell -a "chmod a+x /home/fil/restartprocess "
+ansible ligang -m shell -a "/home/fil/restartprocess f"
+
+
+ansible ligang -m shell -a "ps aux |grep force |grep -v grep "

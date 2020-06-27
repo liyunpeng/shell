@@ -1,0 +1,31 @@
+#!/bin/bash
+function GetRemotePs() {
+  path=$1
+ssh -p 62534 $path > /dev/null 2>&1 << eeooff
+  rm -f  /home/fil/1.txt
+  ps aux |grep force | grep -v grep  > /home/fil/1.txt
+  exit
+eeooff
+
+  scp -rpP 62534 $path:/home/fil/1.txt ./${path}.txt
+  ret=`cat ${path}.txt`
+  rm ${path}.txt
+  echo ${path}:$ret
+}
+
+ips=(
+"10.10.11.33" 
+"10.10.11.34"
+"10.10.11.35"
+"10.10.11.36"
+"10.10.11.37"
+"10.10.11.38"
+"10.10.11.39"
+"10.10.11.40"
+"10.10.10.21"
+)
+
+for ip in ${ips[@]}; do
+  ret=$(GetRemotePs $ip)
+  echo $ret
+done
