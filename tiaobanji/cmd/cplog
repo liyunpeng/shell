@@ -1,15 +1,24 @@
 #!/bin/bash
 datestr=$(date +%Y%m%d%H%M)
-mkdir $datestr
+destdir="/home/zhenglun/log/$datestr"
+mkdir $destdir 
 
-scp -rpP 62534 "10.10.11.31:/home/fil/poster.log" ./${datestr}/poster.log
-scp -rpP 62534 "10.10.11.31:/home/fil/lotus.log" ./${datestr}/lotus.log
-scp -rpP 62534 "10.10.11.32:/home/fil/sealer.log" ./${datestr}/sealer.log
+lotusip="10.10.11.31"
+sealerip="10.10.11.32"
 
-scp -rpP 62534 "10.10.11.33:/home/fil/force-remote-worker.log" ./${datestr}/p23-11.13.force-remote-worker.log
+p1pcip="10.10.10.21"
+p23ip="10.10.11.33"
+p4ip="10.10.11.37"
 
-scp -rpP 62534 "10.10.11.37:/home/fil/force-remote-worker.log" ./${datestr}/p4-11.13.force-remote-worker.log
-scp -rpP 62534 "10.10.10.21:/home/fil/force-remote-worker.log" ./${datestr}/p1pc-10.21.force-remote-worker.log
+scp -rpP 62534 $lotusip":/home/fil/lotus.log" $destdir
+scp -rpP 62534 $lotusip":/home/fil/poster.log"  $destdir
+scp -rpP 62534 $sealerip":/home/fil/sealer.log" $destdir
+
+scp -rpP 62534 $p1pcip":/home/fil/force-remote-worker.log" $destdir"/p1pc-"$p1pcip"-force-remote-worker.log"
+scp -rpP 62534 $p23ip":/home/fil/force-remote-worker.log" $destdir"/p23-"$p23ip"-force-remote-worker.log"
+scp -rpP 62534 $p4ip":/home/fil/force-remote-worker.log" $destdir"/p4-"$p4ip"-force-remote-worker.log"
+
+
 
 
 
