@@ -1,0 +1,11 @@
+scheduler_url = "http://10.10.11.31:3456"
+local_dir = "/sealer"
+copy_limit_mb_per_sec = 500
+group_id= [2]
+sector_size = 536870912
+ip = "10.10.10.17"
+
+[[worker]]
+num = 1
+supported_phase = ["PreCommitPhase2","CommitPhase1"]
+wait_sec = 60

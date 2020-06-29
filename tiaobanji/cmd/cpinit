@@ -1,0 +1,31 @@
+#! /bin/bash
+lotusip=10.10.10.206
+sealerip=10.10.10.207
+
+amdip="10.10.10.17"
+sealerip="10.10.10.17"
+p23ip="10.10.10.206 10.10.10.207 10.10.10.208 10.10.10.209 10.10.10.210 "
+p4ip="10.10.10.211 10.10.10.212 10.10.10.213 10.10.10.214 10.10.10.215"
+
+versionbasepath="/home/zhenglun/version/"
+versionpath="/home/zhenglun/version/20200627/version"
+
+# ansible "$p23ip" -m shell -a "ps aux | grep force"
+
+
+#ansible "$lotusip" -m copy -a "src=${versionpath}/lotus dest=/home/fil/ owner=fil group=fil"
+# ansible "$lotusip" -m copy -a "src=${versionpath}/lotus-server dest=/home/fil/ owner=fil group=fil"
+# `ansible "$lotusip" -m copy -a "src=${versionpath}/lotus-storage-miner dest=/home/fil/ owner=fil group=fil"
+# ansible "$lotusip" -m shell -a "chmod a+x *"
+ansible "$sealerip" -m copy -a "src=${versionpath}/lotus-storage-miner dest=/home/fil/ owner=fil group=fil"
+
+ansible "$amdip" -m copy -a "src=${versionbasepath}/p1config.toml dest=/home/fil/config.toml owner=fil group=fil"
+ansible "$p23ip" -m copy -a "src=${versionbasepath}/p23config.toml dest=/home/fil/config.toml owner=fil group=fil"
+ansible "$p4ip" -m copy -a "src=${versionbasepath}/p4config.toml dest=/home/fil/config.toml owner=fil group=fil"
+
+ansible "$amdip" -m copy -a "src=${versionpath}/amd/force-remote-worker dest=/home/fil/ owner=fil group=fil"
+ansible "$p23ip $p4ip" -m copy -a "src=${versionpath}/intel/force-remote-worker dest=/home/fil/ owner=fil group=fil"
+
+# ansible "$lotusip" -m shell -a "chmod a+x *"
+ansible "$amdip $p23ip $p4ip"  -m shell -a "chmod a+x /home/fil/force-remote-worker"
+ansible "$sealerip"  -m shell -a "chmod a+x /home/fil/lotus-storage-miner"
