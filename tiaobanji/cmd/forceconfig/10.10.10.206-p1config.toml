@@ -4,7 +4,7 @@ seal_commit_phase1_output = "/sealer/p3cache"
 copy_limit_mb_per_sec = 500
 group_id= [2]
 sector_size = 536870912
-ip = "10.10.10.17"
+ip = "10.10.10.206"
 
 [[worker]]
 num = 10

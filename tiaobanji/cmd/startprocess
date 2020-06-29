@@ -53,13 +53,14 @@ case $mod in
   echo "返回值="${ret}
   if [[ $ret == 0 ]]; then
     echo " 启动  worker "
+    echo 'FIL_PROOFS_ALLOW_GENERATING_GROTH=1 RUST_LOG=debug BELLMAN_PROOF_THREADS=3 RUST_BACKTRACE=1 nohup ./force-remote-worker > force-remote-worker.log 2>&1 &`'
     `FIL_PROOFS_ALLOW_GENERATING_GROTH=1 RUST_LOG=debug BELLMAN_PROOF_THREADS=3 RUST_BACKTRACE=1 nohup ./force-remote-worker > force-remote-worker.log 2>&1 &`
   else
     echo "没有worker运行，不需要重启 "
   fi
 
   echo "运行后"
-  ps -ef | grep $filter | grep -v grep 
+  ps aux | grep $filter | grep -v grep 
 ;;
 
 "sv")

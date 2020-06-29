@@ -58,8 +58,9 @@ case $mod in
     echo "没有worker运行，不需要重启 "
   fi
 
+  sleep 1
   echo "运行后"
-  ps -ef | grep $filter | grep -v grep 
+  ps aux | grep $filter | grep -v grep 
 ;;
 
 "sv")
