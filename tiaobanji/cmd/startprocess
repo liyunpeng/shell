@@ -1,0 +1,70 @@
+#! /bin/bash
+
+function killprocess(){
+  name=$1
+  service_pid=`ps -ef | grep $name | grep -v grep | awk '{print $2}'`
+  #echo "需要结束的进程ID为：$service_pid"
+
+  for id in $service_pid
+  do
+    # echo "结束进程: " + $service_pid
+    kill -9 $id
+    echo 1
+    return 
+  done
+
+  echo 0
+  return 
+}
+
+# su - fil
+server_api="http://10.10.11.31:3456"
+mod=$1
+cd /home/fil/
+
+case $mod in
+"l")
+  ret=$(killprocess "lotus.log")
+  if [[ $ret == 0 ]]; then
+    nohup ./lotus daemon --server-api=$server_api --bootstrap=false --api 11234 > lotus.log 2>&1 &
+  else
+    echo "no process"
+  fi
+;;
+
+"p")
+  killprocess "poster.log"
+  TRUST_PARAMS=1 RUST_LOG=info RUST_BACKTRACE=1 nohup ./lotus-storage-miner run --mode=remote-wdposter --server-api=$server_api--dist-path=/mnt --nosync > poster.log 2>&1 &
+;;
+
+"s")
+  killprocess "sealer.log"
+  FORCE_BUILDER_P1_WORKERS=1 FORCE_BUILDER_TASK_DELAY=25m TRUST_PARAMS=1 RUST_LOG=info RUST_BACKTRACE=1 FORCE_BUILDER_TASK_TOTAL_NUM=2 nohup ./lotus-storage-miner run --mode=remote-sealer --server-api=$server_api --dist-path=/mnt --nosync --groups=1 > sealer.log 2>&1 &
+;;
+
+
+"f")
+  filter="force-remote-worker"
+  
+  echo "运行前"
+  ps -ef | grep $filter | grep -v grep 
+
+  ret=$(killprocess $filter)
+  echo "返回值="${ret}
+  if [[ $ret == 0 ]]; then
+    echo " 启动  worker "
+    `FIL_PROOFS_ALLOW_GENERATING_GROTH=1 RUST_LOG=debug BELLMAN_PROOF_THREADS=3 RUST_BACKTRACE=1 nohup ./force-remote-worker > force-remote-worker.log 2>&1 &`
+  else
+    echo "没有worker运行，不需要重启 "
+  fi
+
+  echo "运行后"
+  ps -ef | grep $filter | grep -v grep 
+;;
+
+"sv")
+  killprocess "lotus-server"
+  nohup ./lotus-server >lotus-server.log 2>&1 &
+;;
+esac
+
